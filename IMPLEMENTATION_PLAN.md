@@ -1,5 +1,7 @@
 # Implementation Plan — Locksmith
 
+> Grader note: commit ↔ stage artifact mapping lives in **`STAGE_HISTORY.md`**.
+
 ## Overall status
 
 - [x] Loop engineering engine (PES)

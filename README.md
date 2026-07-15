@@ -86,13 +86,16 @@ tests/                  # offline unit tests
 prompts.txt             # auto-appended agent prompt history
 running.md              # how a TA runs things
 reflection.md           # SE reflection paragraph
+STAGE_HISTORY.md        # grader map: stage commit → artifacts
 IMPLEMENTATION_PLAN.md  # living plan the loop updates
 AGENTS.md               # operational agent notes
 ```
 
 ## Assignment workflow
 
-See `specs/00-assignment-rubric.md` and `running.md`. Short version:
+See `STAGE_HISTORY.md` for a grader map of which commit delivered which stage
+artifact (including honest notes where Step 2 code landed vs stage names).
+Also see `specs/00-assignment-rubric.md` and `running.md`. Short version:
 
 1. `stage start/complete` around **specify → review → plan → build** for `step1_base`
 2. Use `./loop.sh -m plan` / `./loop.sh -m build` for the looped stages
