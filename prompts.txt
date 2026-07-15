@@ -434,3 +434,8 @@ Implemented Locksmith base per IMPLEMENTATION_PLAN:
 - Keep secrets server-side until game finishes; UI only renders public state.
 - Flask + vanilla JS avoids a frontend build step for TA reproducibility.
 <promise>DONE</promise>
+
+========================================================================
+# AI specify — step2_extension/specify
+Authored specs/02-locksmith-extension.md: Hard mode (5×1-8, 12 guesses) +
+GET /api/daily + mode-filtered leaderboards.
