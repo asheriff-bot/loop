@@ -17,7 +17,7 @@ htmlcov/
 # Loop runtime state (regenerated)
 .loop_workspace/
 
-# Assignment PDF — keep local only; do not ship in the graded app tree
+# Assignment PDF — keep local only
 loop.pdf
 
 # Game SQLite DB (created at runtime)

@@ -1,83 +1,60 @@
-# running.md — how to run this repository
-
-## What exists today
-
-This repository currently ships the **loop engineering system** (Plan–Execute–Summary)
-used to satisfy the loop.pdf requirement to use loop code with an AI assistant.
-
-The interactive product (base system + extension) will be built *through* that
-loop in later stages. When the product lands, update this file with exact start
-commands, ports, and sample clicks a TA should perform.
+# running.md — how to run Locksmith
 
 ## Prerequisites
 
-- Python 3.11+ (conda env `loop` is fine)
-- Git
-- Optional for live agent loops: GitHub Copilot CLI and/or Cursor Agent CLI
-
-## Setup
+- Python 3.11+ (conda env `loop` recommended)
+- pip packages from `requirements.txt`
 
 ```bash
 cd /path/to/Assign-4
-conda activate loop   # if using conda
+conda activate loop          # optional but recommended
 pip install -r requirements.txt
-pip install pytest
-chmod +x loop.sh
 ```
 
-## Run the loop (offline smoke test)
+## Start the game server
 
 ```bash
-./loop.sh -m build --backend dry_run -n 1
-python -m loop_engine stage status
-pytest tests/ -q
-```
-
-Expected: dry_run prints a prompt preview, writes experiential memory under
-`.loop_workspace/`, appends to `prompts.txt`, and exits after seeing `DONE`.
-
-## Run the loop with a real coding agent
-
-1. Set `agent.backend` in `config.yaml` to `copilot` or `cursor`, **or** pass
-   `--backend` on the CLI.
-2. Ensure the CLI is installed and authenticated.
-3. Example:
-
-```bash
-./loop.sh -m plan --backend copilot -n 3
-./loop.sh -m build --backend copilot
-```
-
-## Assignment stage workflow (rubric)
-
-```bash
-python -m loop_engine stage start step1_base specify
-# … produce specs …
-python -m loop_engine stage complete step1_base specify --notes "base specs v1"
-
-python -m loop_engine stage start step1_base review
-# … review …
-python -m loop_engine stage complete step1_base review --notes "review pass"
-
-python -m loop_engine stage start step1_base plan
-./loop.sh -m plan --backend <your-backend> -n 5
-python -m loop_engine stage complete step1_base plan --notes "plan ready"
-
-python -m loop_engine stage start step1_base build
-./loop.sh -m build --backend <your-backend>
-python -m loop_engine stage complete step1_base build --notes "base system done"
-
-# Repeat pattern for step2_extension
-```
-
-## Product app (to be filled in)
-
-<!-- TA: replace this section once Step 1 build completes.
-Example:
-```bash
+chmod +x script/server loop.sh
 ./script/server
-open http://127.0.0.1:5000
+# equivalent: PYTHONPATH=. python -m game.app
 ```
--->
 
-_Pending — product not built yet._
+Open in a browser:
+
+**http://127.0.0.1:5055/**
+
+You should see the **Locksmith** UI.
+
+## How a TA can play (2 minutes)
+
+1. Enter a player name.
+2. Choose **Classic** (or **Daily challenge** / **Hard** after extension).
+3. Click **Start game**.
+4. Click digits on the pad to fill 4 (or 5 in hard) slots → **Submit guess**.
+5. Use Exact / Partial pegs to refine guesses (max 10 classic / 12 hard).
+6. On a win, your score appears under **High scores** (SQLite-backed; survives restart).
+
+## Quick API checks
+
+```bash
+curl -s http://127.0.0.1:5055/api/health
+curl -s -X POST http://127.0.0.1:5055/api/games \
+  -H 'Content-Type: application/json' \
+  -d '{"player_name":"TA","mode":"classic"}'
+```
+
+## Tests
+
+```bash
+pip install pytest
+PYTHONPATH=. pytest tests/ -q
+```
+
+## Loop engineering (process tooling)
+
+```bash
+./loop.sh -m plan --backend echo -n 1
+python -m loop_engine stage status
+```
+
+Default game port: **5055** (override with `PORT=...`).

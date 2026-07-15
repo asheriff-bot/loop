@@ -52,6 +52,10 @@ pytest tests/ -q
 
 Default stop token: `DONE` (also accepted as `<promise>DONE</promise>`).
 
-## Ports / product app
+## Ports / product app (Locksmith)
 
-TBD when the base system is scaffolded. Record listening ports and start commands here.
+- Start: `./script/server` or `PYTHONPATH=. python -m game.app`
+- URL: `http://127.0.0.1:5055/`
+- DB: `game/data/locksmith.db` (gitignored; auto-created)
+- Package: `game/` (`logic.py`, `db.py`, `app.py`, `daily.py`, `static/`, `templates/`)
+- Tests: `PYTHONPATH=. pytest tests/ -q`

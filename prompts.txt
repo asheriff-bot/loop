@@ -316,3 +316,121 @@ Summarize remaining work and confidence. Output `<promise>DONE</promise>` only i
 Produced prioritized IMPLEMENTATION_PLAN.md backlog for Locksmith base:
 engine, db, Flask API, static UI, tests, server script. No product code yet.
 <promise>DONE</promise>
+
+========================================================================
+# Prompt captured at loop iteration
+# BUILD / EXECUTE MODE — implement one valuable increment
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build Locksmith: a Mastermind-style code-breaking browser game with a Flask + SQLite backend on localhost:5055 (base system), then extend it with a daily challenge and public leaderboard — using the PES loop for plan/build.
+
+## Context
+- Mode: build
+- Assignment stage: build
+- Iteration: 1
+
+## Retrieved experiential memory (most recent first)
+
+### Iteration 1 [SUCCESS] stage=plan
+- Plan: Mode=plan; prompt length=2442 chars
+- Execution: backend=echo; elapsed=0.00s; returncode=0; output_chars=285
+- Reflection: Completion promise detected=False. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+### Iteration 1 [SUCCESS] stage=review
+- Plan: Mode=review; prompt length=1667 chars
+- Execution: backend=echo; elapsed=0.00s; returncode=0; output_chars=285
+- Reflection: Completion promise detected=False. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+### Iteration 1 [SUCCESS] stage=build
+- Plan: Mode=build; prompt length=1846 chars
+- Execution: backend=dry_run; elapsed=0.00s; returncode=0; output_chars=1360
+- Reflection: Completion promise detected=True. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+### Iteration 1 [SUCCESS] stage=build
+- Plan: Mode=build; prompt length=1544 chars
+- Execution: backend=dry_run; elapsed=0.00s; returncode=0; output_chars=1360
+- Reflection: Completion promise detected=True. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md`.
+1. Pick the **highest-priority unfinished** item. Search the codebase before coding.
+2. Implement it fully — no stubs, placeholders, or "TODO later" exits.
+3. Run the relevant tests for the unit you changed. Fix failures you cause (and any
+   unrelated broken tests you touch).
+4. Update `IMPLEMENTATION_PLAN.md` (mark done / add discoveries).
+5. If you learn a new run command, update `AGENTS.md` briefly (operational only).
+6. `git add` + `git commit` with a clear message describing *why*.
+
+## Hard constraints
+- Single sources of truth; avoid adapters/migrations unless the spec requires them.
+- Keep progress out of `AGENTS.md`.
+- Record durable learnings so the next loop iteration does not rediscover them.
+
+## Lessons
+After your work, write a short `## Lessons` section with 1–5 bullets about what
+worked or failed (the Summary step stores these in experiential memory).
+
+## When fully done
+When **all** plan items for the current step are implemented and validated, output:
+`<promise>DONE</promise>`
+
+========================================================================
+# Prompt captured at loop iteration
+# BUILD / EXECUTE MODE — implement one valuable increment
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build Locksmith: a Mastermind-style code-breaking browser game with a Flask + SQLite backend on localhost:5055 (base system), then extend it with a daily challenge and public leaderboard — using the PES loop for plan/build.
+
+## Context
+- Mode: build
+- Assignment stage: build
+- Iteration: 1
+
+No prior experiential memory yet. This is the first iteration — explore carefully and record lessons in Summary.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md`.
+1. Pick the **highest-priority unfinished** item. Search the codebase before coding.
+2. Implement it fully — no stubs, placeholders, or "TODO later" exits.
+3. Run the relevant tests for the unit you changed. Fix failures you cause (and any
+   unrelated broken tests you touch).
+4. Update `IMPLEMENTATION_PLAN.md` (mark done / add discoveries).
+5. If you learn a new run command, update `AGENTS.md` briefly (operational only).
+6. `git add` + `git commit` with a clear message describing *why*.
+
+## Hard constraints
+- Single sources of truth; avoid adapters/migrations unless the spec requires them.
+- Keep progress out of `AGENTS.md`.
+- Record durable learnings so the next loop iteration does not rediscover them.
+
+## Lessons
+After your work, write a short `## Lessons` section with 1–5 bullets about what
+worked or failed (the Summary step stores these in experiential memory).
+
+## When fully done
+When **all** plan items for the current step are implemented and validated, output:
+`<promise>DONE</promise>`
+
+========================================================================
+# AI (Cursor) BUILD execution — step1_base/build
+Implemented Locksmith base per IMPLEMENTATION_PLAN:
+- game/logic.py, db.py, app.py, templates, static
+- tests (logic + API), script/server
+- Verified: pytest green; server on :5055; play win via /api + UI index 200
+## Lessons
+- Mastermind duplicate handling needs exact-first multiset logic (unit-tested).
+- Keep secrets server-side until game finishes; UI only renders public state.
+- Flask + vanilla JS avoids a frontend build step for TA reproducibility.
+<promise>DONE</promise>

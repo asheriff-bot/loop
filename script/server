@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Start Locksmith on http://127.0.0.1:5055
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+export PYTHONPATH="${ROOT}${PYTHONPATH:+:$PYTHONPATH}"
+export PORT="${PORT:-5055}"
+exec python -m game.app

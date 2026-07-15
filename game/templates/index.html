@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Locksmith</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <p class="eyebrow">localhost:5055</p>
+      <h1>Locksmith</h1>
+      <p class="tagline">Crack the 4-digit vault code. Exact &amp; partial pegs. Server-side scoring.</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel play">
+        <div id="lobby" class="lobby">
+          <label for="playerName">Player name</label>
+          <input id="playerName" maxlength="40" placeholder="Your name" value="Player" />
+          <div class="mode-row">
+            <label><input type="radio" name="mode" value="classic" checked /> Classic</label>
+            <label><input type="radio" name="mode" value="daily" /> Daily challenge</label>
+          </div>
+          <button id="startBtn" type="button">Start game</button>
+        </div>
+
+        <div id="board" class="board hidden">
+          <div class="status-bar">
+            <span id="statusText">Make a guess</span>
+            <span id="remainingText"></span>
+          </div>
+          <div id="currentGuess" class="current-guess" aria-label="Current guess"></div>
+          <div class="pad" id="digitPad"></div>
+          <div class="actions">
+            <button id="backspaceBtn" type="button" class="ghost">Backspace</button>
+            <button id="submitBtn" type="button">Submit guess</button>
+            <button id="newGameBtn" type="button" class="ghost">New game</button>
+          </div>
+          <ul id="history" class="history"></ul>
+          <p id="resultBanner" class="banner hidden"></p>
+        </div>
+      </section>
+
+      <aside class="panel scores">
+        <h2>High scores</h2>
+        <p class="hint">Wins only · persisted in SQLite</p>
+        <ol id="scoreList"></ol>
+        <button id="refreshScores" type="button" class="ghost">Refresh</button>
+      </aside>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='game.js') }}"></script>
+</body>
+</html>
