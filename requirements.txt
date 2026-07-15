@@ -1,0 +1,3 @@
+# Minimal deps for the loop engine itself.
+# The product you build with the loop may add Flask/React/etc. later.
+PyYAML>=6.0.1

@@ -1,0 +1,53 @@
+# Loop Engineering Configuration
+# -----------------------------
+# Engineer note: keep knobs here so the loop script stays thin. When we're
+# tuning "how aggressive should an iteration be?", we change YAML — not bash.
+
+project:
+  name: "assign4-loop-demo"
+  # Ultimate goal the agent should keep in mind across every PES cycle.
+  goal: >
+    Build a nontrivial interactive web app (base system), then extend it with
+    a meaningful feature — using the Plan-Execute-Summary loop for plan/build.
+
+# Assignment workflow from loop.pdf: 2 steps × ≥3 stages each.
+# We model the classroom stages explicitly so commits map 1:1 to rubric items.
+assignment:
+  steps:
+    - id: step1_base
+      title: "Base system"
+      stages: [specify, review, plan, build]
+    - id: step2_extension
+      title: "Extension"
+      stages: [specify, review, plan, build]
+
+# PES evolution settings (inspired by LoongFlow, simplified for coursework).
+evolve:
+  max_iterations: 10
+  # Stop the inner AI loop when this marker appears in agent output.
+  completion_promise: "DONE"
+  # Persist a checkpoint of experiential memory every N completed cycles.
+  checkpoint_interval: 2
+  # Where the loop writes state the next iteration can read.
+  workspace: ".loop_workspace"
+  memory_file: ".loop_workspace/experiential_memory.json"
+  stage_log: ".loop_workspace/stage_log.json"
+
+# How we invoke the coding agent each iteration.
+# - dry_run: print the rendered prompt (no LLM spend; good for smoke tests)
+# - copilot: GitHub Copilot CLI (what the class tutorial used)
+# - cursor:  Cursor Agent CLI if installed (`agent` / `cursor agent`)
+# - echo:    write the prompt to a file for manual paste into any AI chat
+agent:
+  backend: dry_run
+  model: claude-opus-4.8
+  allow_all_tools: true
+  # Seconds to wait before declaring an agent hung (0 = no timeout).
+  timeout_seconds: 0
+
+git:
+  # After each assignment STAGE completes, create a commit (rubric requirement).
+  commit_on_stage: true
+  # After each PES iteration inside plan/build, optionally push (ralph-style).
+  push_on_iteration: false
+  remote: origin

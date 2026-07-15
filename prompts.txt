@@ -1,0 +1,215 @@
+# prompts.txt
+#
+# loop.pdf deliverable: every prompt / command given to an agent.
+# The loop engine APPENDS to this file automatically whenever it renders a
+# prompt (see loop_engine/prompt_loader.append_to_prompts_log).
+#
+# Manual agent chats should also be pasted below under a dated heading.
+
+## Bootstrap (human → Cursor)
+
+Analyze loop.pdf and build loop engineering code from scratch inspired by
+https://github.com/baidu-baige/LoongFlow (Plan-Execute-Summary), meeting the
+assignment requirements, with human-engineer reasoning comments.
+
+========================================================================
+# Prompt captured at loop iteration
+# BUILD / EXECUTE MODE — implement one valuable increment
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build a nontrivial interactive web app (base system), then extend it with a meaningful feature — using the Plan-Execute-Summary loop for plan/build.
+
+## Context
+- Mode: build
+- Assignment stage: build
+- Iteration: 1
+
+No prior experiential memory yet. This is the first iteration — explore carefully and record lessons in Summary.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md`.
+1. Pick the **highest-priority unfinished** item. Search the codebase before coding.
+2. Implement it fully — no stubs, placeholders, or "TODO later" exits.
+3. Run the relevant tests for the unit you changed. Fix failures you cause (and any
+   unrelated broken tests you touch).
+4. Update `IMPLEMENTATION_PLAN.md` (mark done / add discoveries).
+5. If you learn a new run command, update `AGENTS.md` briefly (operational only).
+6. `git add` + `git commit` with a clear message describing *why*.
+
+## Hard constraints
+- Single sources of truth; avoid adapters/migrations unless the spec requires them.
+- Keep progress out of `AGENTS.md`.
+- Record durable learnings so the next loop iteration does not rediscover them.
+
+## Lessons
+After your work, write a short `## Lessons` section with 1–5 bullets about what
+worked or failed (the Summary step stores these in experiential memory).
+
+## When fully done
+When **all** plan items for the current step are implemented and validated, output:
+`<promise>DONE</promise>`
+
+========================================================================
+# Prompt captured at loop iteration
+# BUILD / EXECUTE MODE — implement one valuable increment
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build a nontrivial interactive web app (base system), then extend it with a meaningful feature — using the Plan-Execute-Summary loop for plan/build.
+
+## Context
+- Mode: build
+- Assignment stage: build
+- Iteration: 1
+
+No prior experiential memory yet. This is the first iteration — explore carefully and record lessons in Summary.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md`.
+1. Pick the **highest-priority unfinished** item. Search the codebase before coding.
+2. Implement it fully — no stubs, placeholders, or "TODO later" exits.
+3. Run the relevant tests for the unit you changed. Fix failures you cause (and any
+   unrelated broken tests you touch).
+4. Update `IMPLEMENTATION_PLAN.md` (mark done / add discoveries).
+5. If you learn a new run command, update `AGENTS.md` briefly (operational only).
+6. `git add` + `git commit` with a clear message describing *why*.
+
+## Hard constraints
+- Single sources of truth; avoid adapters/migrations unless the spec requires them.
+- Keep progress out of `AGENTS.md`.
+- Record durable learnings so the next loop iteration does not rediscover them.
+
+## Lessons
+After your work, write a short `## Lessons` section with 1–5 bullets about what
+worked or failed (the Summary step stores these in experiential memory).
+
+## When fully done
+When **all** plan items for the current step are implemented and validated, output:
+`<promise>DONE</promise>`
+
+========================================================================
+# Prompt captured at loop iteration
+# BUILD / EXECUTE MODE — implement one valuable increment
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build a nontrivial interactive web app (base system), then extend it with a meaningful feature — using the Plan-Execute-Summary loop for plan/build.
+
+## Context
+- Mode: build
+- Assignment stage: build
+- Iteration: 1
+
+No prior experiential memory yet. This is the first iteration — explore carefully and record lessons in Summary.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md`.
+1. Pick the **highest-priority unfinished** item. Search the codebase before coding.
+2. Implement it fully — no stubs, placeholders, or "TODO later" exits.
+3. Run the relevant tests for the unit you changed. Fix failures you cause (and any
+   unrelated broken tests you touch).
+4. Update `IMPLEMENTATION_PLAN.md` (mark done / add discoveries).
+5. If you learn a new run command, update `AGENTS.md` briefly (operational only).
+6. `git add` + `git commit` with a clear message describing *why*.
+
+## Hard constraints
+- Single sources of truth; avoid adapters/migrations unless the spec requires them.
+- Keep progress out of `AGENTS.md`.
+- Record durable learnings so the next loop iteration does not rediscover them.
+
+## Lessons
+After your work, write a short `## Lessons` section with 1–5 bullets about what
+worked or failed (the Summary step stores these in experiential memory).
+
+## When fully done
+When **all** plan items for the current step are implemented and validated, output:
+`<promise>DONE</promise>`
+
+========================================================================
+# Prompt captured at loop iteration
+# BUILD / EXECUTE MODE — implement one valuable increment
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build a nontrivial interactive web app (base system), then extend it with a meaningful feature — using the Plan-Execute-Summary loop for plan/build.
+
+## Context
+- Mode: build
+- Assignment stage: build
+- Iteration: 1
+
+## Retrieved experiential memory (most recent first)
+
+### Iteration 1 [SUCCESS] stage=build
+- Plan: Mode=build; prompt length=1544 chars
+- Execution: backend=dry_run; elapsed=0.00s; returncode=0; output_chars=1360
+- Reflection: Completion promise detected=True. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md`.
+1. Pick the **highest-priority unfinished** item. Search the codebase before coding.
+2. Implement it fully — no stubs, placeholders, or "TODO later" exits.
+3. Run the relevant tests for the unit you changed. Fix failures you cause (and any
+   unrelated broken tests you touch).
+4. Update `IMPLEMENTATION_PLAN.md` (mark done / add discoveries).
+5. If you learn a new run command, update `AGENTS.md` briefly (operational only).
+6. `git add` + `git commit` with a clear message describing *why*.
+
+## Hard constraints
+- Single sources of truth; avoid adapters/migrations unless the spec requires them.
+- Keep progress out of `AGENTS.md`.
+- Record durable learnings so the next loop iteration does not rediscover them.
+
+## Lessons
+After your work, write a short `## Lessons` section with 1–5 bullets about what
+worked or failed (the Summary step stores these in experiential memory).
+
+## When fully done
+When **all** plan items for the current step are implemented and validated, output:
+`<promise>DONE</promise>`
+
+========================================================================
+# Prompt captured at loop iteration
+# BUILD / EXECUTE MODE — implement one valuable increment
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build a nontrivial interactive web app (base system), then extend it with a meaningful feature — using the Plan-Execute-Summary loop for plan/build.
+
+## Context
+- Mode: build
+- Assignment stage: build
+- Iteration: 1
+
+No prior experiential memory yet. This is the first iteration — explore carefully and record lessons in Summary.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md`.
+1. Pick the **highest-priority unfinished** item. Search the codebase before coding.
+2. Implement it fully — no stubs, placeholders, or "TODO later" exits.
+3. Run the relevant tests for the unit you changed. Fix failures you cause (and any
+   unrelated broken tests you touch).
+4. Update `IMPLEMENTATION_PLAN.md` (mark done / add discoveries).
+5. If you learn a new run command, update `AGENTS.md` briefly (operational only).
+6. `git add` + `git commit` with a clear message describing *why*.
+
+## Hard constraints
+- Single sources of truth; avoid adapters/migrations unless the spec requires them.
+- Keep progress out of `AGENTS.md`.
+- Record durable learnings so the next loop iteration does not rediscover them.
+
+## Lessons
+After your work, write a short `## Lessons` section with 1–5 bullets about what
+worked or failed (the Summary step stores these in experiential memory).
+
+## When fully done
+When **all** plan items for the current step are implemented and validated, output:
+`<promise>DONE</promise>`
