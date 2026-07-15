@@ -14,15 +14,9 @@ from typing import Any
 
 from flask import Flask, jsonify, render_template, request
 
+from game.daily import daily_secret, today_utc
 from game.db import Database
-from game.logic import (
-    MAX_GUESSES,
-    CODE_LENGTH,
-    evaluate_guess,
-    generate_secret,
-    score_for_win,
-    validate_guess,
-)
+from game.logic import evaluate_guess, generate_secret, get_mode, score_for_win, validate_guess
 
 ROOT = Path(__file__).resolve().parent
 
@@ -43,22 +37,29 @@ def create_app(db_path: str | None = None) -> Flask:
     def health():
         return jsonify({"ok": True, "service": "locksmith"})
 
+    @app.get("/api/daily")
+    def daily_info():
+        return jsonify({"date": today_utc(), "mode": "daily"})
+
     @app.post("/api/games")
     def create_game():
         payload = request.get_json(silent=True) or {}
         player_name = str(payload.get("player_name") or "Player")[:40]
-        mode = str(payload.get("mode") or "classic")
+        mode_raw = str(payload.get("mode") or "classic").lower()
         challenge_date = payload.get("challenge_date")
 
-        if mode == "daily":
-            # Daily secret is deterministic from UTC date (extension helper).
-            from game.daily import daily_secret, today_utc
+        try:
+            cfg = get_mode(mode_raw)
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
 
+        if cfg.name == "daily":
             challenge_date = challenge_date or today_utc()
             secret = daily_secret(challenge_date)
+            mode = "daily"
         else:
-            secret = generate_secret()
-            mode = "classic"
+            secret = generate_secret(cfg.name)
+            mode = cfg.name
             challenge_date = None
 
         game_id = db.create_game(
@@ -70,8 +71,10 @@ def create_app(db_path: str | None = None) -> Flask:
         return jsonify(
             {
                 "game_id": game_id,
-                "max_guesses": MAX_GUESSES,
-                "code_length": CODE_LENGTH,
+                "max_guesses": cfg.max_guesses,
+                "code_length": cfg.code_length,
+                "digit_min": cfg.digit_min,
+                "digit_max": cfg.digit_max,
                 "mode": mode,
                 "challenge_date": challenge_date,
                 "player_name": player_name,
@@ -93,21 +96,32 @@ def create_app(db_path: str | None = None) -> Flask:
         if game["status"] != "active":
             return jsonify({"error": "Game already finished", "game": _public_game(game)}), 409
 
+        cfg = get_mode(game.get("mode") or "classic")
         payload = request.get_json(silent=True) or {}
         raw_guess = payload.get("guess")
         try:
-            guess = validate_guess(raw_guess or [])
+            guess = validate_guess(
+                raw_guess or [],
+                code_length=cfg.code_length,
+                digit_min=cfg.digit_min,
+                digit_max=cfg.digit_max,
+            )
         except ValueError as exc:
             return jsonify({"error": str(exc)}), 400
 
-        exact, partial = evaluate_guess(game["secret"], guess)
+        exact, partial = evaluate_guess(
+            game["secret"],
+            guess,
+            digit_min=cfg.digit_min,
+            digit_max=cfg.digit_max,
+        )
         guesses_used = int(game["guesses_used"]) + 1
         status = "active"
         score = None
-        if exact == CODE_LENGTH:
+        if exact == cfg.code_length:
             status = "won"
-            score = score_for_win(guesses_used)
-        elif guesses_used >= MAX_GUESSES:
+            score = score_for_win(guesses_used, cfg.name)
+        elif guesses_used >= cfg.max_guesses:
             status = "lost"
 
         db.add_guess(
@@ -125,7 +139,7 @@ def create_app(db_path: str | None = None) -> Flask:
             "exact": exact,
             "partial": partial,
             "guesses_used": guesses_used,
-            "remaining": MAX_GUESSES - guesses_used,
+            "remaining": cfg.max_guesses - guesses_used,
             "status": status,
             "game": _public_game(updated),
         }
@@ -142,15 +156,17 @@ def create_app(db_path: str | None = None) -> Flask:
 
 
 def _public_game(game: dict[str, Any]) -> dict[str, Any]:
-    """Strip secret while active; reveal after finish for learning."""
+    cfg = get_mode(game.get("mode") or "classic")
     public = {
         "id": game["id"],
         "player_name": game["player_name"],
         "status": game["status"],
         "guesses_used": game["guesses_used"],
         "score": game["score"],
-        "max_guesses": MAX_GUESSES,
-        "code_length": CODE_LENGTH,
+        "max_guesses": cfg.max_guesses,
+        "code_length": cfg.code_length,
+        "digit_min": cfg.digit_min,
+        "digit_max": cfg.digit_max,
         "mode": game.get("mode") or "classic",
         "challenge_date": game.get("challenge_date"),
         "guesses": game.get("guesses") or [],
@@ -165,7 +181,6 @@ def _public_game(game: dict[str, Any]) -> dict[str, Any]:
 def main() -> None:
     port = int(os.environ.get("PORT", "5055"))
     app = create_app()
-    # threaded=True so UI + API feel snappy during local play
     app.run(host="127.0.0.1", port=port, debug=False, threaded=True)
 
 

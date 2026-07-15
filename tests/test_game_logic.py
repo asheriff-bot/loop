@@ -35,3 +35,13 @@ def test_validate_rejects_out_of_range():
 def test_score_bounds():
     assert score_for_win(1) == 1000
     assert score_for_win(10) == 100
+
+
+def test_hard_score_and_length():
+    from game.logic import get_mode, evaluate_guess
+
+    cfg = get_mode("hard")
+    assert cfg.code_length == 5
+    assert cfg.digit_max == 8
+    assert score_for_win(1, "hard") == 12 * 120
+    assert evaluate_guess([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], digit_min=1, digit_max=8) == (5, 0)

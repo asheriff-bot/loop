@@ -3,12 +3,18 @@
 ## Overall status
 
 - [x] Loop engineering engine (PES)
-- [ ] Step 1 — Base system (Locksmith)
-- [ ] Step 2 — Extension (daily challenge + leaderboard)
+- [x] Step 1 — Base system (Locksmith classic + UI + SQLite)
+- [x] Step 2 — Extension (daily endpoint + hard mode) — in build
 
 ---
 
-## Step 1 — Base system
+## Step 1 — Base system — DONE
+
+Build backlog all completed (logic, db, Flask API, UI, tests, server script).
+
+---
+
+## Step 2 — Extension
 
 ### Stages
 
@@ -17,39 +23,17 @@
 3. [ ] plan *(PES loop)*
 4. [ ] build *(PES loop)*
 
-### Build backlog (priority order)
-
-1. [ ] `game/logic.py` — `evaluate_guess(secret, guess)` Mastermind rules + score helper; unit tests for duplicates
-2. [ ] `game/db.py` — SQLite schema, create game, add guess, list top scores
-3. [ ] `game/app.py` — Flask routes per `specs/01-locksmith-base.md` on port **5055**
-4. [ ] `game/static/` + `game/templates/index.html` — playable UI (name, digit pad, history, scores)
-5. [ ] `tests/test_game_logic.py` + `tests/test_api.py` — logic + API happy/error paths
-6. [ ] `script/server` + update `requirements.txt` (Flask) + `AGENTS.md` run notes
-7. [ ] Manual play smoke: win path + lose path + score persists after restart
-
-### Review notes (step1_base)
-
-- Spec OK; enforce multiset exact-then-partial marking; never leak secret while active.
-
----
-
-## Step 2 — Extension
-
-### Stages
-
-1. [ ] specify
-2. [ ] review
-3. [ ] plan *(PES loop)*
-4. [ ] build *(PES loop)*
-
 ### Build backlog
 
-- [ ] TBD after step2 specify
+1. [ ] ModeConfig for classic/daily/hard in `game/logic.py`
+2. [ ] `GET /api/daily` (date only, no secret)
+3. [ ] Hard create/guess scoring path in `game/app.py`
+4. [ ] UI: Hard radio + dynamic pad/slots from API metadata
+5. [ ] Tests for hard win + daily endpoint
+6. [ ] Update running.md / AGENTS.md
 
-## Review notes (step2_extension / review)
+### Review notes (step2_extension / review)
 
 - Hard mode params are clear and testable.
-- UI must rebuild digit pad from `code_length` / digit max returned by create — do not hardcode 4/6 in JS after create.
+- UI must rebuild digit pad from `code_length` / digit max returned by create.
 - Daily endpoint must not leak secret.
-- Ready for plan/build.
-

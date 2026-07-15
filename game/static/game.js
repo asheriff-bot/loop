@@ -1,9 +1,12 @@
 (() => {
-  const CODE_LENGTH = 4;
   const state = {
     gameId: null,
     current: [],
     finished: false,
+    codeLength: 4,
+    digitMin: 1,
+    digitMax: 6,
+    maxGuesses: 10,
   };
 
   const els = {
@@ -22,6 +25,7 @@
     newGameBtn: document.getElementById("newGameBtn"),
     scoreList: document.getElementById("scoreList"),
     refreshScores: document.getElementById("refreshScores"),
+    dailyInfo: document.getElementById("dailyInfo"),
   };
 
   function selectedMode() {
@@ -31,7 +35,7 @@
 
   function renderSlots() {
     els.currentGuess.innerHTML = "";
-    for (let i = 0; i < CODE_LENGTH; i++) {
+    for (let i = 0; i < state.codeLength; i++) {
       const slot = document.createElement("div");
       slot.className = "slot" + (state.current[i] != null ? " filled" : "");
       slot.textContent = state.current[i] != null ? state.current[i] : "·";
@@ -41,12 +45,12 @@
 
   function buildPad() {
     els.digitPad.innerHTML = "";
-    for (let d = 1; d <= 6; d++) {
+    for (let d = state.digitMin; d <= state.digitMax; d++) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.textContent = String(d);
       btn.addEventListener("click", () => {
-        if (state.finished || state.current.length >= CODE_LENGTH) return;
+        if (state.finished || state.current.length >= state.codeLength) return;
         state.current.push(d);
         renderSlots();
       });
@@ -82,7 +86,7 @@
 
   async function refreshScores() {
     const mode = selectedMode();
-    const data = await api(`/api/scores?mode=${encodeURIComponent(mode === "daily" ? "daily" : "classic")}`);
+    const data = await api(`/api/scores?mode=${encodeURIComponent(mode)}`);
     els.scoreList.innerHTML = "";
     if (!data.scores.length) {
       els.scoreList.innerHTML = "<li>No wins yet — be the first.</li>";
@@ -94,6 +98,16 @@
       li.innerHTML = `<strong>${s.score}</strong> — ${escapeHtml(s.player_name)}
         <span class="meta">${s.guesses_used} guesses · ${s.mode || "classic"}${daily}</span>`;
       els.scoreList.appendChild(li);
+    }
+  }
+
+  async function refreshDailyInfo() {
+    if (!els.dailyInfo) return;
+    try {
+      const data = await api("/api/daily");
+      els.dailyInfo.textContent = `Today's daily vault date (UTC): ${data.date}`;
+    } catch {
+      els.dailyInfo.textContent = "";
     }
   }
 
@@ -114,14 +128,22 @@
     state.gameId = data.game_id;
     state.current = [];
     state.finished = false;
+    state.codeLength = data.code_length;
+    state.digitMin = data.digit_min;
+    state.digitMax = data.digit_max;
+    state.maxGuesses = data.max_guesses;
     els.lobby.classList.add("hidden");
     els.board.classList.remove("hidden");
     els.resultBanner.classList.add("hidden");
-    els.statusText.textContent =
-      data.mode === "daily"
-        ? `Daily challenge ${data.challenge_date}`
-        : "Classic vault — make a guess";
+    if (data.mode === "daily") {
+      els.statusText.textContent = `Daily challenge ${data.challenge_date}`;
+    } else if (data.mode === "hard") {
+      els.statusText.textContent = "Hard vault — 5 digits, 1–8";
+    } else {
+      els.statusText.textContent = "Classic vault — make a guess";
+    }
     els.remainingText.textContent = `${data.max_guesses} guesses left`;
+    buildPad();
     renderSlots();
     renderHistory([]);
     await refreshScores();
@@ -129,8 +151,8 @@
 
   async function submitGuess() {
     if (state.finished) return;
-    if (state.current.length !== CODE_LENGTH) {
-      els.statusText.textContent = "Enter 4 digits first";
+    if (state.current.length !== state.codeLength) {
+      els.statusText.textContent = `Enter ${state.codeLength} digits first`;
       return;
     }
     try {
@@ -182,4 +204,5 @@
   buildPad();
   renderSlots();
   refreshScores().catch(console.error);
+  refreshDailyInfo().catch(console.error);
 })();
