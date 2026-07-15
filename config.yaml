@@ -4,11 +4,12 @@
 # tuning "how aggressive should an iteration be?", we change YAML — not bash.
 
 project:
-  name: "assign4-loop-demo"
+  name: "locksmith"
   # Ultimate goal the agent should keep in mind across every PES cycle.
   goal: >
-    Build a nontrivial interactive web app (base system), then extend it with
-    a meaningful feature — using the Plan-Execute-Summary loop for plan/build.
+    Build Locksmith: a Mastermind-style code-breaking browser game with a Flask
+    + SQLite backend on localhost:5055 (base system), then extend it with a
+    daily challenge and public leaderboard — using the PES loop for plan/build.
 
 # Assignment workflow from loop.pdf: 2 steps × ≥3 stages each.
 # We model the classroom stages explicitly so commits map 1:1 to rubric items.

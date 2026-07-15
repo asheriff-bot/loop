@@ -52,6 +52,12 @@
 
 ---
 
-## Review notes
+## Review notes (step1_base / review)
 
-_None yet — run `./loop.sh -m review` after specs exist._
+Reviewed `specs/01-locksmith-base.md`:
+
+- **Feasible**: Flask + SQLite + vanilla JS is appropriate for a TA-runnable localhost demo.
+- **Gaps fixed during review**: clarified score formula, secret reveal only after finish, digit domain 1–6, port **5055**.
+- **Risk**: Mastermind partial-count with duplicates — must use multiset marking (exact first, then partial). Tests required.
+- **Not disconnected**: `/api/scores` feeds the UI sidebar; create → guess → finish path is end-to-end.
+- **Ready for plan/build**: yes.

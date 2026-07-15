@@ -213,3 +213,48 @@ worked or failed (the Summary step stores these in experiential memory).
 ## When fully done
 When **all** plan items for the current step are implemented and validated, output:
 `<promise>DONE</promise>`
+
+========================================================================
+# Human → Cursor Agent (2026-07-14) — product build request
+Use the AI + loop code correctly to build a small gaming application with
+proper backend, functional generated code, runnable on localhost on a port
+so the game can be played correctly.
+
+========================================================================
+# Prompt captured at loop iteration
+# REVIEW MODE — critique specs/plan before building
+
+## Goal
+Build Locksmith: a Mastermind-style code-breaking browser game with a Flask + SQLite backend on localhost:5055 (base system), then extend it with a daily challenge and public leaderboard — using the PES loop for plan/build.
+
+## Context
+- Mode: review
+- Stage: review
+- Iteration: 1
+
+## Retrieved experiential memory (most recent first)
+
+### Iteration 1 [SUCCESS] stage=build
+- Plan: Mode=build; prompt length=1846 chars
+- Execution: backend=dry_run; elapsed=0.00s; returncode=0; output_chars=1360
+- Reflection: Completion promise detected=True. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+### Iteration 1 [SUCCESS] stage=build
+- Plan: Mode=build; prompt length=1544 chars
+- Execution: backend=dry_run; elapsed=0.00s; returncode=0; output_chars=1360
+- Reflection: Completion promise detected=True. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+## Instructions
+1. Review `specs/*` and `IMPLEMENTATION_PLAN.md` (if present).
+2. Check for: ambiguities, missing acceptance criteria, unrealistic deps,
+   underspecified edge cases, and anything disconnected from the stated goal.
+3. Ask/answer clarifying questions in the docs themselves (update the specs).
+4. Produce a short review note in `IMPLEMENTATION_PLAN.md` under `## Review notes`.
+5. Do not implement product code.
+
+When the review is complete and blockers are either resolved or explicitly listed,
+output `<promise>DONE</promise>`.

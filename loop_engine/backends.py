@@ -127,42 +127,57 @@ class CursorBackend(AgentBackend):
     """
     Cursor Agent CLI if available.
 
-    Cursor's CLI surface evolves; we try common entrypoints and fail with a
-    clear message rather than silently no-oping.
+    Engineer note: in current Cursor CLIs, ``-p`` / ``--print`` means "print to
+    stdout for scripting", NOT "prompt follows". The prompt is positional.
+    ``--force`` allows tools in non-interactive runs (needed inside our loop).
     """
 
     def run(self, prompt: str, config: dict[str, Any]) -> AgentResponse:
         started = time.time()
-        candidates = [
-            ["agent", "-p", prompt],
-            ["cursor", "agent", "-p", prompt],
+        agent_bin = shutil.which("agent")
+        if agent_bin is None and shutil.which("cursor"):
+            # Fallback: `cursor agent …` form
+            base = ["cursor", "agent"]
+        elif agent_bin is not None:
+            base = [agent_bin]
+        else:
+            raise RuntimeError(
+                "Cursor agent CLI not found. Install Cursor Agent or use "
+                "dry_run / echo backend."
+            )
+
+        # Persist prompt to a file so giant templates don't blow ARG_MAX.
+        workspace = Path(config["evolve"]["workspace"])
+        workspace.mkdir(parents=True, exist_ok=True)
+        prompt_path = workspace / "cursor_prompt.md"
+        prompt_path.write_text(prompt, encoding="utf-8")
+
+        cmd = [
+            *base,
+            "--print",
+            "--force",
+            "--output-format",
+            "text",
+            prompt,
         ]
-        last_err: Exception | None = None
-        for cmd in candidates:
-            if shutil.which(cmd[0]) is None:
-                continue
-            try:
-                timeout = config.get("agent", {}).get("timeout_seconds") or None
-                proc = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout if timeout and timeout > 0 else None,
-                )
-                output = (proc.stdout or "") + (proc.stderr or "")
-                print(output)
-                return AgentResponse(
-                    output=output,
-                    backend="cursor",
-                    elapsed_seconds=time.time() - started,
-                    returncode=proc.returncode,
-                )
-            except Exception as exc:  # noqa: BLE001 — surface best error below
-                last_err = exc
-                continue
-        raise RuntimeError(
-            "Cursor agent CLI not found/usable. Tried `agent` and `cursor agent`. "
-            f"Last error: {last_err}. Use dry_run or echo backend instead."
+        timeout = config.get("agent", {}).get("timeout_seconds") or None
+        try:
+            proc = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout if timeout and timeout > 0 else None,
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise RuntimeError(f"Cursor agent invocation failed: {exc}") from exc
+
+        output = (proc.stdout or "") + (proc.stderr or "")
+        print(output)
+        return AgentResponse(
+            output=output,
+            backend="cursor",
+            elapsed_seconds=time.time() - started,
+            returncode=proc.returncode,
         )
 
 
