@@ -45,3 +45,11 @@
 ### Build backlog
 
 - [ ] TBD after step2 specify
+
+## Review notes (step2_extension / review)
+
+- Hard mode params are clear and testable.
+- UI must rebuild digit pad from `code_length` / digit max returned by create — do not hardcode 4/6 in JS after create.
+- Daily endpoint must not leak secret.
+- Ready for plan/build.
+
