@@ -18,11 +18,14 @@ Public entry points live in ``loop_engine.cli`` and ``loop.sh``.
 
 from .agent import PESAgent
 from .config import load_config
+from .evaluator import EvalResult, LocksmithEvaluator
 from .models import CycleResult, Experience, StageState
 
 __all__ = [
     "PESAgent",
     "load_config",
+    "EvalResult",
+    "LocksmithEvaluator",
     "CycleResult",
     "Experience",
     "StageState",

@@ -57,4 +57,27 @@ PYTHONPATH=. pytest tests/ -q
 python -m loop_engine stage status
 ```
 
+## EvalMetric (backend automation score)
+
+Composite fitness (LoongFlow-style), each term in `[0, 1]`:
+
+```
+S = 0.30·L + 0.25·A + 0.15·M + 0.20·T + 0.10·P
+```
+
+| Symbol | Component | What it measures |
+|--------|-----------|------------------|
+| L | logic_correctness | Mastermind / scoring properties |
+| A | api_contract | Flask routes, secret hiding, win path |
+| M | mode_coverage | classic / daily / hard shapes |
+| T | test_suite | pytest pass rate |
+| P | persistence | scores survive “restart” (same DB) |
+
+```bash
+./script/eval                 # print S + component breakdown
+./loop.sh automate -n 3       # PES build loop gated on target_score (default 1.0)
+```
+
+Reports land in `.loop_workspace/evals/`.
+
 Default game port: **5055** (override with `PORT=...`).

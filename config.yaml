@@ -33,6 +33,10 @@ evolve:
   workspace: ".loop_workspace"
   memory_file: ".loop_workspace/experiential_memory.json"
   stage_log: ".loop_workspace/stage_log.json"
+  # EvalMetric: S = 0.30·L + 0.25·A + 0.15·M + 0.20·T + 0.10·P  (see evaluator.py)
+  eval_enabled: true
+  eval_run_pytest: true
+  target_score: 1.0
 
 # How we invoke the coding agent each iteration.
 # - dry_run: print the rendered prompt (no LLM spend; good for smoke tests)

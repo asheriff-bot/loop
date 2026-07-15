@@ -1,20 +1,17 @@
 """
-PESAgent — Plan → Execute → Summary orchestrator.
+PESAgent — Plan → Execute → Evaluate → Summary orchestrator.
 
 Engineer reasoning
 ------------------
-LoongFlow's PESAgent runs concurrent evolutionary islands with evaluators and
-checkpoints. For assignment loop engineering we want the *same thinking shape*
-without the research-platform weight:
+LoongFlow inserts evaluation between execution and summarization so the loop
+optimizes a measurable fitness, not vibes. We keep that shape:
 
     while not done and iteration < max:
         plan    = Planner.build(mode, memory)
-        result  = Executor.run(plan)          # coding agent does the work
-        summary = Summarizer.summarize(result)
-        memory.add(summary.experience)
-        maybe checkpoint / push
-
-That loop *is* the product we're shipping for loop.pdf's "use a loop" clause.
+        result  = Executor.run(plan)
+        score   = LocksmithEvaluator.evaluate()   # EvalMetric S
+        summary = Summarizer.summarize(result, score)
+        stop if promise OR S >= target_score
 """
 
 from __future__ import annotations
@@ -24,6 +21,7 @@ from typing import Any, Optional
 
 from . import git_ops
 from .backends import get_backend
+from .evaluator import LocksmithEvaluator, save_eval_report
 from .executor import Executor
 from .memory import ExperientialMemory
 from .models import CycleResult
@@ -44,10 +42,17 @@ class PESAgent:
         self.executor = Executor(config, self.backend)
         self.summarizer = Summarizer(config, self.memory)
 
-        self.max_iterations = int(config["evolve"].get("max_iterations") or 10)
-        self.checkpoint_interval = int(
-            config["evolve"].get("checkpoint_interval") or 0
+        evolve = config["evolve"]
+        self.max_iterations = int(evolve.get("max_iterations") or 10)
+        self.checkpoint_interval = int(evolve.get("checkpoint_interval") or 0)
+        self.target_score = float(evolve.get("target_score", 1.0))
+        self.eval_enabled = bool(evolve.get("eval_enabled", True))
+        self.eval_run_pytest = bool(evolve.get("eval_run_pytest", True))
+        self.evaluator = LocksmithEvaluator(
+            target_score=self.target_score,
+            run_pytest=self.eval_run_pytest,
         )
+
         self.push_on_iteration = bool(
             config.get("git", {}).get("push_on_iteration", False)
         )
@@ -60,21 +65,33 @@ class PESAgent:
         iteration: int,
         stage: str,
     ) -> CycleResult:
-        """One PES cycle. Keep side effects (memory, files) inside summarizer."""
+        """One Plan → Execute → Evaluate → Summary cycle."""
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         print(f"PES cycle  mode={mode}  iteration={iteration}  stage={stage}")
         print(f"memory size={self.memory.size}  backend={self.backend.__class__.__name__}")
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
         plan = self.planner.build(mode=mode, iteration=iteration, stage=stage)
-        # Explicit phase labels make logs greppable when a run goes sideways.
         print("[pes] ▶ PLAN complete (prompt rendered + logged to prompts.txt)")
 
         execution = self.executor.run(plan)
         print("[pes] ▶ EXECUTE complete")
 
+        evaluation = None
+        if self.eval_enabled:
+            evaluation = self.evaluator.evaluate()
+            report_path = Path(self.config["evolve"]["workspace"]) / "evals" / (
+                f"iter-{iteration:04d}.json"
+            )
+            save_eval_report(evaluation, report_path)
+            print(evaluation.render())
+            print(f"[pes] ▶ EVALUATE complete → {report_path}")
+
         summary = self.summarizer.summarize(
-            iteration=iteration, stage=stage, execution=execution
+            iteration=iteration,
+            stage=stage,
+            execution=execution,
+            evaluation=evaluation,
         )
         print("[pes] ▶ SUMMARY complete (memory updated)")
 
@@ -92,8 +109,12 @@ class PESAgent:
             try:
                 git_ops.push_current(self.remote)
             except RuntimeError as exc:
-                # Don't kill a good local cycle because remotes are flaky.
                 print(f"[pes] push skipped: {exc}")
+
+        # Done if agent promised completion *or* eval met the target (automation stop).
+        done = summary.done
+        if evaluation is not None and evaluation.met_target:
+            done = True
 
         return CycleResult(
             iteration=iteration,
@@ -101,9 +122,11 @@ class PESAgent:
             plan_text=plan.prompt,
             execute_text=execution.response.output,
             summary_text=summary.text,
-            done=summary.done,
+            done=done,
             experience=summary.experience,
             raw_agent_output=execution.response.output,
+            eval_score=evaluation.score if evaluation else None,
+            eval_met_target=evaluation.met_target if evaluation else None,
         )
 
     def run_loop(
@@ -112,13 +135,13 @@ class PESAgent:
         stage: str,
         max_iterations: Optional[int] = None,
         stop_on_promise: bool = True,
+        stop_on_target_score: bool = True,
     ) -> list[CycleResult]:
         """
-        Ralph-style outer loop: repeat PES cycles until completion promise or
-        max iterations. This is what ``loop.sh`` / ``python -m loop_engine`` call.
+        Outer loop: repeat PES cycles until completion promise, max iterations,
+        or EvalMetric reaches target_score.
         """
         limit = max_iterations if max_iterations is not None else self.max_iterations
-        # 0 means unlimited — mirror loop.sh semantics from the class tutorial.
         unlimited = limit == 0
         results: list[CycleResult] = []
         iteration = 1
@@ -131,14 +154,35 @@ class PESAgent:
             result = self.run_cycle(mode=mode, iteration=iteration, stage=stage)
             results.append(result)
 
-            if stop_on_promise and result.done:
-                promise = self.config["evolve"].get("completion_promise", "DONE")
+            if stop_on_target_score and result.eval_met_target:
                 print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-                print(f"✓ Completion promise found: '{promise}'")
+                print(
+                    f"✓ EvalMetric target met: S={result.eval_score:.4f} "
+                    f">= {self.target_score:.2f}"
+                )
                 print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
                 break
+
+            if stop_on_promise and result.done and result.eval_met_target is not False:
+                # When eval is enabled and target missed, keep looping even if
+                # dry_run emitted DONE — fitness drives automation.
+                if not self.eval_enabled or result.eval_met_target:
+                    promise = self.config["evolve"].get("completion_promise", "DONE")
+                    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                    print(f"✓ Completion promise found: '{promise}'")
+                    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                    break
 
             iteration += 1
             print(f"\n\n======================== LOOP {iteration} ========================\n")
 
         return results
+
+    def run_eval_only(self):
+        """Standalone EvalMetric without an agent turn."""
+        result = self.evaluator.evaluate()
+        report_path = Path(self.config["evolve"]["workspace"]) / "evals" / "manual.json"
+        save_eval_report(result, report_path)
+        print(result.render())
+        print(f"[eval] report → {report_path}")
+        return result

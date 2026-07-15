@@ -39,9 +39,13 @@ pip install -r requirements.txt pytest
 chmod +x loop.sh
 
 # Offline smoke test (no LLM)
-./loop.sh -m build --backend dry_run -n 1
+./loop.sh -m build --backend dry_run -n 1 --no-eval
 pytest tests/ -q
 python -m loop_engine stage status
+
+# EvalMetric + eval-gated PES automation
+./script/eval
+./loop.sh automate -n 3 --backend dry_run
 ```
 
 ## Layout

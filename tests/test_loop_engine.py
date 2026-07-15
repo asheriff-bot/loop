@@ -35,6 +35,8 @@ def tmp_config(tmp_path: Path) -> dict:
     cfg["agent"]["backend"] = "dry_run"
     cfg["git"]["commit_on_stage"] = False
     cfg["git"]["push_on_iteration"] = False
+    # Keep unit tests fast/offline; EvalMetric is covered in test_evaluator.py
+    cfg["evolve"]["eval_enabled"] = False
     return cfg
 
 

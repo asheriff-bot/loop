@@ -96,6 +96,12 @@ class ExperientialMemory:
             lines.append(f"- Plan: {exp.plan_summary}")
             lines.append(f"- Execution: {exp.execution_summary}")
             lines.append(f"- Reflection: {exp.reflection}")
+            if exp.eval_score is not None:
+                lines.append(f"- EvalMetric S: {exp.eval_score:.4f}")
+            if exp.eval_feedback:
+                lines.append("- Eval feedback:")
+                for item in exp.eval_feedback[:6]:
+                    lines.append(f"  - {item}")
             if exp.lessons:
                 lines.append("- Lessons:")
                 for lesson in exp.lessons:

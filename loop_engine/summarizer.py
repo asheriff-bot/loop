@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .evaluator import EvalResult
 from .executor import ExecutionArtifact
 from .memory import ExperientialMemory
 from .models import Experience, utc_now_iso
@@ -39,6 +40,7 @@ class Summarizer:
         iteration: int,
         stage: str,
         execution: ExecutionArtifact,
+        evaluation: EvalResult | None = None,
     ) -> SummaryArtifact:
         output = execution.response.output or ""
         done = self._detect_done(output)
@@ -55,6 +57,12 @@ class Summarizer:
                     "iteration to avoid re-planning finished work."
                 )
             ]
+        if evaluation is not None:
+            lessons = [
+                f"EvalMetric S={evaluation.score:.4f} "
+                f"(target {evaluation.target_score:.2f}; "
+                f"{'met' if evaluation.met_target else 'missed'})"
+            ] + lessons
 
         plan_summary = (
             f"Mode={execution.plan.mode}; prompt length={len(execution.plan.prompt)} chars"
@@ -69,6 +77,8 @@ class Summarizer:
             f"Completion promise detected={done}. "
             f"Treating cycle as {'success' if success else 'needs-follow-up'}."
         )
+        if evaluation is not None:
+            reflection += f" EvalMetric S={evaluation.score:.4f}."
 
         experience = Experience(
             iteration=iteration,
@@ -76,17 +86,21 @@ class Summarizer:
             plan_summary=plan_summary,
             execution_summary=execution_summary,
             reflection=reflection,
-            success=success,
+            success=success and (evaluation.met_target if evaluation else True),
             lessons=lessons,
+            eval_score=evaluation.score if evaluation else None,
+            eval_feedback=list(evaluation.feedback) if evaluation else [],
         )
         self.memory.add(experience)
-        self._write_reflection_file(iteration, stage, experience, output)
+        self._write_reflection_file(iteration, stage, experience, output, evaluation)
 
         text = (
             f"[summary] iteration={iteration} done={done} success={success}\n"
             f"[summary] lessons:\n"
             + "\n".join(f"  - {x}" for x in lessons)
         )
+        if evaluation is not None:
+            text += f"\n[summary] eval_score={evaluation.score:.4f}"
         print(text)
         return SummaryArtifact(experience=experience, done=done, text=text)
 
@@ -140,11 +154,22 @@ class Summarizer:
         stage: str,
         experience: Experience,
         raw_output: str,
+        evaluation: EvalResult | None = None,
     ) -> None:
         workspace = Path(self.config["evolve"]["workspace"])
         reflections = workspace / "reflections"
         reflections.mkdir(parents=True, exist_ok=True)
         path = reflections / f"iter-{iteration:04d}-{stage}.md"
+        eval_block = ""
+        if evaluation is not None:
+            eval_block = (
+                f"\n## EvalMetric\n\n"
+                f"- Score: {evaluation.score:.4f}\n"
+                f"- Target: {evaluation.target_score:.2f}\n"
+                f"- Met target: {evaluation.met_target}\n\n"
+                + evaluation.render()
+                + "\n"
+            )
         body = (
             f"# Reflection — iteration {iteration} ({stage})\n\n"
             f"- Created: {utc_now_iso()}\n"
@@ -154,6 +179,7 @@ class Summarizer:
             f"## Reflection\n{experience.reflection}\n\n"
             f"## Lessons\n"
             + "\n".join(f"- {x}" for x in experience.lessons)
+            + eval_block
             + "\n\n## Raw agent output (truncated)\n```\n"
             + (raw_output[:4000] + ("…" if len(raw_output) > 4000 else ""))
             + "\n```\n"

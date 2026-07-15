@@ -23,11 +23,14 @@ MAX_ITERATIONS=""
 BACKEND=""
 STAGE=""
 CONFIG=""
+COMMAND="run"
 EXTRA=()
 
 usage() {
   cat <<'EOF'
 Usage: ./loop.sh [options]
+       ./loop.sh eval [--no-pytest]
+       ./loop.sh automate [-n N] [-b backend]
 
 Options:
   -m, --mode <plan|build|execute|specify|review|summary>
@@ -40,9 +43,16 @@ Options:
 Examples:
   ./loop.sh -m plan -n 3
   ./loop.sh -m build --backend dry_run
-  ./loop.sh -m build --backend copilot -n 10
+  ./loop.sh eval
+  ./loop.sh automate -n 3 --backend dry_run
 EOF
 }
+
+# Subcommands: eval | automate (EvalMetric / backend automation)
+if [[ "${1:-}" == "eval" || "${1:-}" == "automate" ]]; then
+  COMMAND="$1"
+  shift
+fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -74,10 +84,18 @@ if ! command -v "$PYTHON" >/dev/null 2>&1 && [[ ! -x "$PYTHON" ]]; then
   exit 1
 fi
 
-CMD=("$PYTHON" -m loop_engine run --mode "$MODE")
-[[ -n "$MAX_ITERATIONS" ]] && CMD+=(--max "$MAX_ITERATIONS")
-[[ -n "$BACKEND" ]] && CMD+=(--backend "$BACKEND")
-[[ -n "$STAGE" ]] && CMD+=(--stage "$STAGE")
+if [[ "$COMMAND" == "eval" ]]; then
+  CMD=("$PYTHON" -m loop_engine eval)
+elif [[ "$COMMAND" == "automate" ]]; then
+  CMD=("$PYTHON" -m loop_engine automate)
+  [[ -n "$MAX_ITERATIONS" ]] && CMD+=(--max "$MAX_ITERATIONS")
+  [[ -n "$BACKEND" ]] && CMD+=(--backend "$BACKEND")
+else
+  CMD=("$PYTHON" -m loop_engine run --mode "$MODE")
+  [[ -n "$MAX_ITERATIONS" ]] && CMD+=(--max "$MAX_ITERATIONS")
+  [[ -n "$BACKEND" ]] && CMD+=(--backend "$BACKEND")
+  [[ -n "$STAGE" ]] && CMD+=(--stage "$STAGE")
+fi
 [[ -n "$CONFIG" ]] && CMD+=(--config "$CONFIG")
 # With `set -u`, empty arrays error on "${EXTRA[@]}" in some bash versions —
 # only append when the user actually passed trailing args.
@@ -86,8 +104,9 @@ if ((${#EXTRA[@]})); then
 fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Loop Engineering (PES)"
-echo "Mode:    $MODE"
+echo "Loop Engineering (PES + EvalMetric)"
+echo "Command: $COMMAND"
+[[ "$COMMAND" == "run" ]] && echo "Mode:    $MODE"
 echo "Python:  $PYTHON ($("$PYTHON" --version 2>&1))"
 echo "Branch:  $(git branch --show-current 2>/dev/null || echo n/a)"
 [[ -n "$MAX_ITERATIONS" ]] && echo "Max:     $MAX_ITERATIONS"

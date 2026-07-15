@@ -19,8 +19,13 @@ pip install -r requirements.txt
 pip install pytest           # for tests
 
 # Smoke-test the loop without an LLM
-./loop.sh -m build --backend dry_run -n 1
-python -m loop_engine run -m plan --backend dry_run -n 1
+./loop.sh -m build --backend dry_run -n 1 --no-eval
+python -m loop_engine run -m plan --backend dry_run -n 1 --no-eval
+
+# EvalMetric (backend fitness): S = 0.30L+0.25A+0.15M+0.20T+0.10P
+./script/eval
+./loop.sh eval
+python -m loop_engine automate -n 3 --backend dry_run
 
 # Assignment stage tracker
 python -m loop_engine stage status

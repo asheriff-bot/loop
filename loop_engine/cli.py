@@ -6,7 +6,7 @@ Engineer reasoning
 Two entry shapes matter for this class:
 
 1. ``./loop.sh -m plan -n 5``  — familiar to anyone who saw the ralph tutorial
-2. ``python -m loop_engine …`` — better for tests, staging commands, status
+2. ``python -m loop_engine …`` — better for tests, staging commands, status, eval
 
 This module owns (2); ``loop.sh`` is a thin wrapper that calls into here so we
 don't maintain two divergent parsers.
@@ -27,7 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="loop_engine",
         description=(
-            "Loop Engineering CLI — Plan-Execute-Summary agent loop "
+            "Loop Engineering CLI — Plan-Execute-Evaluate-Summary agent loop "
             "(LoongFlow-inspired, coursework-sized)."
         ),
     )
@@ -72,6 +72,41 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Do not stop when the completion promise appears",
     )
+    run_p.add_argument(
+        "--no-eval",
+        action="store_true",
+        help="Disable EvalMetric for this run",
+    )
+
+    # --- eval: standalone backend fitness ---
+    eval_p = sub.add_parser(
+        "eval",
+        help="Run Locksmith EvalMetric (S = 0.30L+0.25A+0.15M+0.20T+0.10P)",
+    )
+    eval_p.add_argument(
+        "--no-pytest",
+        action="store_true",
+        help="Skip pytest component (faster smoke)",
+    )
+
+    # --- automate: eval-driven PES loop ---
+    auto_p = sub.add_parser(
+        "automate",
+        help="Run PES build loop with EvalMetric gate (backend automation)",
+    )
+    auto_p.add_argument(
+        "-n",
+        "--max",
+        type=int,
+        default=3,
+        help="Max PES iterations (default: 3)",
+    )
+    auto_p.add_argument(
+        "--backend",
+        default="dry_run",
+        choices=["dry_run", "echo", "copilot"],
+        help="Agent backend (default: dry_run)",
+    )
 
     # --- stage: assignment rubric helpers ---
     stage_p = sub.add_parser("stage", help="Manage assignment stages / commits")
@@ -96,7 +131,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     next_p = stage_sub.add_parser("next", help="Show the next pending stage")
-    # argparse needs the parser object even if unused — keeps API parallel.
     _ = next_p
 
     # --- memory ---
@@ -116,6 +150,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     if args.command == "run":
         if args.backend:
             config["agent"]["backend"] = args.backend
+        if args.no_eval:
+            config["evolve"]["eval_enabled"] = False
         stage = args.stage or args.mode
         agent = PESAgent(config)
         agent.run_loop(
@@ -125,6 +161,33 @@ def main(argv: Optional[list[str]] = None) -> int:
             stop_on_promise=not args.no_stop,
         )
         return 0
+
+    if args.command == "eval":
+        if args.no_pytest:
+            config["evolve"]["eval_run_pytest"] = False
+        agent = PESAgent(config)
+        result = agent.run_eval_only()
+        return 0 if result.met_target else 1
+
+    if args.command == "automate":
+        config["agent"]["backend"] = args.backend
+        config["evolve"]["eval_enabled"] = True
+        agent = PESAgent(config)
+        results = agent.run_loop(
+            mode="build",
+            stage="build",
+            max_iterations=args.max,
+            stop_on_promise=True,
+            stop_on_target_score=True,
+        )
+        if not results:
+            return 1
+        last = results[-1]
+        print(
+            f"[automate] cycles={len(results)} "
+            f"final_S={last.eval_score} met={last.eval_met_target}"
+        )
+        return 0 if last.eval_met_target else 1
 
     tracker = StageTracker(config["evolve"]["stage_log"], config["assignment"])
 
