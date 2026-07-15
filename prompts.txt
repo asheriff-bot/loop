@@ -258,3 +258,61 @@ Build Locksmith: a Mastermind-style code-breaking browser game with a Flask + SQ
 
 When the review is complete and blockers are either resolved or explicitly listed,
 output `<promise>DONE</promise>`.
+
+========================================================================
+# Prompt captured at loop iteration
+# PLAN MODE — analysis only (do not implement)
+
+You are running inside a Plan–Execute–Summary loop engineering system.
+
+## Goal
+Build Locksmith: a Mastermind-style code-breaking browser game with a Flask + SQLite backend on localhost:5055 (base system), then extend it with a daily challenge and public leaderboard — using the PES loop for plan/build.
+
+## Context
+- Mode: plan
+- Assignment stage: plan
+- Iteration: 1
+
+## Retrieved experiential memory (most recent first)
+
+### Iteration 1 [SUCCESS] stage=review
+- Plan: Mode=review; prompt length=1667 chars
+- Execution: backend=echo; elapsed=0.00s; returncode=0; output_chars=285
+- Reflection: Completion promise detected=False. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+### Iteration 1 [SUCCESS] stage=build
+- Plan: Mode=build; prompt length=1846 chars
+- Execution: backend=dry_run; elapsed=0.00s; returncode=0; output_chars=1360
+- Reflection: Completion promise detected=True. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+### Iteration 1 [SUCCESS] stage=build
+- Plan: Mode=build; prompt length=1544 chars
+- Execution: backend=dry_run; elapsed=0.00s; returncode=0; output_chars=1360
+- Reflection: Completion promise detected=True. Treating cycle as success.
+- Lessons:
+  - Completed a cycle; review IMPLEMENTATION_PLAN.md before the next iteration to avoid re-planning finished work.
+
+## Instructions
+0. Study `specs/*` and `IMPLEMENTATION_PLAN.md` (create the plan file if missing).
+1. Study the existing codebase. Do **not** assume features are missing — search first.
+2. Compare code vs specs. Look for TODOs, stubs, skipped tests, and inconsistencies.
+3. Update `IMPLEMENTATION_PLAN.md` as a prioritized bullet list of remaining work.
+4. If a required capability is truly absent, author/extend a spec under `specs/`.
+
+## Hard constraints
+- **Plan only. Do NOT implement code changes** (docs/plan updates are OK).
+- Prefer consolidating shared utilities over copy-paste.
+- Keep `AGENTS.md` operational (commands/ports/patterns). Progress notes belong in `IMPLEMENTATION_PLAN.md`.
+
+## When finished
+Summarize remaining work and confidence. Output `<promise>DONE</promise>` only if the plan is complete and implementation-ready (no further planning iterations needed).
+
+========================================================================
+# AI (Cursor) response to PLAN prompt — step1_base/plan
+Produced prioritized IMPLEMENTATION_PLAN.md backlog for Locksmith base:
+engine, db, Flask API, static UI, tests, server script. No product code yet.
+<promise>DONE</promise>

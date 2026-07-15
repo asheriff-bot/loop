@@ -1,63 +1,47 @@
-# Implementation Plan
-
-> Living document. The PES **plan** mode updates this; **build** mode picks the
-> top unfinished item. Clear completed items periodically so the file stays lean.
+# Implementation Plan — Locksmith
 
 ## Overall status
 
-- [x] Loop engineering engine (PES) scaffolded from scratch
-- [ ] Step 1 — Base system (nontrivial interactive app)
-- [ ] Step 2 — Extension
-
----
-
-## Step 0 — Loop infrastructure (this repo bootstrap)
-
-- [x] `loop_engine` PES package (plan / execute / summary + memory)
-- [x] `loop.sh` CLI wrapper mirroring class tutorial UX
-- [x] Prompt templates for specify / review / plan / build / summary
-- [x] Stage tracker aligned with loop.pdf (2 steps × stages + commits)
-- [x] Offline dry_run backend + unit tests
-- [ ] Choose concrete product idea for Step 1 (must be nontrivial, not a clone)
+- [x] Loop engineering engine (PES)
+- [ ] Step 1 — Base system (Locksmith)
+- [ ] Step 2 — Extension (daily challenge + leaderboard)
 
 ---
 
 ## Step 1 — Base system
 
-### Stages (commit after each)
+### Stages
 
-1. **specify** — write `specs/` for the base product
-2. **review** — critique specs; fix holes
-3. **plan** — fill this section with prioritized build tasks *(use PES loop)*
-4. **build** — implement via PES loop until `<promise>DONE</promise>`
+1. [x] specify
+2. [x] review
+3. [ ] plan *(PES loop)*
+4. [ ] build *(PES loop)*
 
-### Build backlog (fill during plan stage)
+### Build backlog (priority order)
 
-- [ ] TBD after specify/review
+1. [ ] `game/logic.py` — `evaluate_guess(secret, guess)` Mastermind rules + score helper; unit tests for duplicates
+2. [ ] `game/db.py` — SQLite schema, create game, add guess, list top scores
+3. [ ] `game/app.py` — Flask routes per `specs/01-locksmith-base.md` on port **5055**
+4. [ ] `game/static/` + `game/templates/index.html` — playable UI (name, digit pad, history, scores)
+5. [ ] `tests/test_game_logic.py` + `tests/test_api.py` — logic + API happy/error paths
+6. [ ] `script/server` + update `requirements.txt` (Flask) + `AGENTS.md` run notes
+7. [ ] Manual play smoke: win path + lose path + score persists after restart
+
+### Review notes (step1_base)
+
+- Spec OK; enforce multiset exact-then-partial marking; never leak secret while active.
 
 ---
 
 ## Step 2 — Extension
 
-### Stages (commit after each)
+### Stages
 
-1. **specify**
-2. **review**
-3. **plan** *(use PES loop)*
-4. **build** *(use PES loop)*
+1. [ ] specify
+2. [ ] review
+3. [ ] plan *(PES loop)*
+4. [ ] build *(PES loop)*
 
 ### Build backlog
 
-- [ ] TBD
-
----
-
-## Review notes (step1_base / review)
-
-Reviewed `specs/01-locksmith-base.md`:
-
-- **Feasible**: Flask + SQLite + vanilla JS is appropriate for a TA-runnable localhost demo.
-- **Gaps fixed during review**: clarified score formula, secret reveal only after finish, digit domain 1–6, port **5055**.
-- **Risk**: Mastermind partial-count with duplicates — must use multiset marking (exact first, then partial). Tests required.
-- **Not disconnected**: `/api/scores` feeds the UI sidebar; create → guess → finish path is end-to-end.
-- **Ready for plan/build**: yes.
+- [ ] TBD after step2 specify
