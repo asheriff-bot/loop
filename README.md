@@ -1,8 +1,11 @@
-# Assign-4 — Loop Engineering (PES)
+# Assign-4 — Locksmith + Loop Engineering (PES)
 
-From-scratch **Plan–Execute–Summary** loop engineering code for CMU DevOps
-`loop.pdf`, inspired by [LoongFlow](https://github.com/baidu-baige/LoongFlow)
-and the classroom [Ralph Wiggum tutorial](https://github.com/gwincr11/ralph-wiggum-tutorial).
+**Play the game:** `./script/server` → [http://127.0.0.1:5055/](http://127.0.0.1:5055/)
+
+Mastermind-style **Locksmith** (Flask + SQLite) built with from-scratch
+**Plan–Execute–Summary** loop engineering code for CMU DevOps `loop.pdf`,
+inspired by [LoongFlow](https://github.com/baidu-baige/LoongFlow) and the
+classroom [Ralph Wiggum tutorial](https://github.com/gwincr11/ralph-wiggum-tutorial).
 
 ## Why this shape?
 

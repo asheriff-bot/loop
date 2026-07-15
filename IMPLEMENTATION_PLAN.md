@@ -4,7 +4,7 @@
 
 - [x] Loop engineering engine (PES)
 - [x] Step 1 — Base system (Locksmith classic + UI + SQLite)
-- [x] Step 2 — Extension (daily endpoint + hard mode) — in build
+- [x] Step 2 — Extension (daily endpoint + hard mode)
 
 ---
 
@@ -20,17 +20,17 @@ Build backlog all completed (logic, db, Flask API, UI, tests, server script).
 
 1. [x] specify
 2. [x] review
-3. [ ] plan *(PES loop)*
-4. [ ] build *(PES loop)*
+3. [x] plan *(PES loop)*
+4. [x] build *(PES loop)*
 
 ### Build backlog
 
-1. [ ] ModeConfig for classic/daily/hard in `game/logic.py`
-2. [ ] `GET /api/daily` (date only, no secret)
-3. [ ] Hard create/guess scoring path in `game/app.py`
-4. [ ] UI: Hard radio + dynamic pad/slots from API metadata
-5. [ ] Tests for hard win + daily endpoint
-6. [ ] Update running.md / AGENTS.md
+1. [x] ModeConfig for classic/daily/hard in `game/logic.py`
+2. [x] `GET /api/daily` (date only, no secret)
+3. [x] Hard create/guess scoring path in `game/app.py`
+4. [x] UI: Hard radio + dynamic pad/slots from API metadata
+5. [x] Tests for hard win + daily endpoint
+6. [x] Update running.md / AGENTS.md
 
 ### Review notes (step2_extension / review)
 
