@@ -17,18 +17,42 @@ classroom [Ralph Wiggum tutorial](https://github.com/gwincr11/ralph-wiggum-tutor
 
 Expert performance comes from better **thinking**, not denser retries.
 
+## Architecture (loop vs game)
+
+![PES Automation and Locksmith Game architecture](docs/architecture-pes-locksmith.png)
+
+*Illustration: Project Context (green) feeds **PES Automation / Loop engineering code** (orange), which produces and maintains the **Locksmith Game** (blue).*
+
+### Reading the diagram
+
+| Region (in illustration) | What it is | Repo paths |
+|--------------------------|------------|------------|
+| **Green — Project Context** | Specs, prompts, and living work artifacts that steer each iteration | `specs/`, `prompts/`, `IMPLEMENTATION_PLAN.md`, `prompts.txt`, `reflection.md`, … |
+| **Orange — PES Automation** | The actual **Loop engineering code** (Plan → Execute → Evaluate → Summary) | `loop_engine/` (`agent.py`, `planner.py`, `executor.py`, `evaluator.py`, `summarizer.py`, `memory.py`, `backends.py`, `stages.py`, `git_ops.py`, …), plus `loop.sh` / `config.yaml` |
+| **Blue — Locksmith Game** | The **product** built *by* the loop: Flask backend + browser UI | `game/` (`app.py`, `logic.py`, `db.py`, `daily.py`, `templates/`, `static/`) |
+
+### How the Locksmith backend is generated with the loop
+
+1. **Context in** — Stage prompts (`PROMPT_plan.md` / `PROMPT_build.md`, etc.) + assignment specs tell the loop *what* to build next.
+2. **Plan** (`planner.py`) — Renders those instructions with experiential memory and writes the prompt into `prompts.txt`.
+3. **Execute** (`executor.py` → `backends.py`) — Dispatches the prompt to an agent backend (`dry_run` / `echo` / `copilot`). That is the hand-off where product files under `game/` get created or changed (routes, SQLite, Mastermind rules, UI).
+4. **Evaluate** (`evaluator.py`) — Scores the backend with EvalMetric \(S\) so the loop stops on fitness, not vibes.
+5. **Summary** (`summarizer.py` → `memory.py`) — Records lessons / \(S\) for the next iteration; stage boundaries are committed via `git_ops.py` / `stages.py`.
+6. **Game out** — `python -m game.app` serves the resulting Flask API + UI on `http://127.0.0.1:5055/`.
+
+In short: **orange code runs the loop; blue code is what players hit.** The executor is the bridge that turns proposed work into Locksmith backend/frontend files.
+
+Compact cycle view:
+
 ```
-┌──────────────────────────────────────────────┐
-│                 PESAgent.run_loop            │
-│                                              │
-│   ┌────────┐   ┌──────────┐   ┌──────────┐   │
-│   │  Plan  │──▶│ Execute  │──▶│ Summary  │   │
-│   │ prompt │   │  agent   │   │ memory   │   │
-│   └────────┘   └──────────┘   └────┬─────┘   │
-│        ▲                           │         │
-│        └───────── next iter ───────┘         │
-│              until <promise>DONE</promise>   │
-└──────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│              PESAgent.run_loop (orange)             │
+│  Plan → Execute → Evaluate → Summary → next iter    │
+│         │                                           │
+│         └── writes/updates ─▶ game/* (blue)         │
+│              until <promise>DONE</promise>           │
+│              or EvalMetric S ≥ target_score          │
+└─────────────────────────────────────────────────────┘
 ```
 
 ## Quick start
@@ -53,7 +77,9 @@ python -m loop_engine stage status
 ```
 loop.sh                 # thin CLI (ralph-compatible flags)
 config.yaml             # project goal, stages, backends
-loop_engine/            # PES implementation + reasoning comments
+loop_engine/            # Loop engineering code (orange in diagram)
+game/                   # Locksmith product backend + UI (blue in diagram)
+docs/                   # architecture illustration for this README
 prompts/                # mode prompt templates
 specs/                  # product + rubric specs
 tests/                  # offline unit tests
