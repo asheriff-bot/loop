@@ -3,9 +3,9 @@ Agent backends — how each PES iteration actually talks to an AI.
 
 Engineer reasoning
 ------------------
-The class tutorial shells out to ``copilot``. Students may use Cursor, Claude
-Code, or a chat UI instead. Abstracting the backend lets the *loop logic*
-stay identical while the invocation strategy differs.
+The class tutorial shells out to ``copilot``. Students may instead paste prompts
+into any coding assistant via the ``echo`` backend. Abstracting the backend
+lets the *loop logic* stay identical while the invocation strategy differs.
 
 dry_run is first-class: we can unit-smoke the PES machinery without spending
 API credits — critical when iterating on the loop engine itself.
@@ -95,7 +95,7 @@ class CopilotBackend(AgentBackend):
         if shutil.which("copilot") is None:
             raise RuntimeError(
                 "copilot CLI not found on PATH. Install GitHub Copilot CLI "
-                "or switch agent.backend to dry_run / echo / cursor."
+                "or switch agent.backend to dry_run / echo."
             )
         started = time.time()
         agent_cfg = config.get("agent", {})
@@ -123,70 +123,11 @@ class CopilotBackend(AgentBackend):
         )
 
 
-class CursorBackend(AgentBackend):
-    """
-    Cursor Agent CLI if available.
-
-    Engineer note: in current Cursor CLIs, ``-p`` / ``--print`` means "print to
-    stdout for scripting", NOT "prompt follows". The prompt is positional.
-    ``--force`` allows tools in non-interactive runs (needed inside our loop).
-    """
-
-    def run(self, prompt: str, config: dict[str, Any]) -> AgentResponse:
-        started = time.time()
-        agent_bin = shutil.which("agent")
-        if agent_bin is None and shutil.which("cursor"):
-            # Fallback: `cursor agent …` form
-            base = ["cursor", "agent"]
-        elif agent_bin is not None:
-            base = [agent_bin]
-        else:
-            raise RuntimeError(
-                "Cursor agent CLI not found. Install Cursor Agent or use "
-                "dry_run / echo backend."
-            )
-
-        # Persist prompt to a file so giant templates don't blow ARG_MAX.
-        workspace = Path(config["evolve"]["workspace"])
-        workspace.mkdir(parents=True, exist_ok=True)
-        prompt_path = workspace / "cursor_prompt.md"
-        prompt_path.write_text(prompt, encoding="utf-8")
-
-        cmd = [
-            *base,
-            "--print",
-            "--force",
-            "--output-format",
-            "text",
-            prompt,
-        ]
-        timeout = config.get("agent", {}).get("timeout_seconds") or None
-        try:
-            proc = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=timeout if timeout and timeout > 0 else None,
-            )
-        except Exception as exc:  # noqa: BLE001
-            raise RuntimeError(f"Cursor agent invocation failed: {exc}") from exc
-
-        output = (proc.stdout or "") + (proc.stderr or "")
-        print(output)
-        return AgentResponse(
-            output=output,
-            backend="cursor",
-            elapsed_seconds=time.time() - started,
-            returncode=proc.returncode,
-        )
-
-
 def get_backend(name: str) -> AgentBackend:
     mapping: dict[str, type[AgentBackend]] = {
         "dry_run": DryRunBackend,
         "echo": EchoBackend,
         "copilot": CopilotBackend,
-        "cursor": CursorBackend,
     }
     if name not in mapping:
         raise ValueError(

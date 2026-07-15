@@ -29,7 +29,7 @@ python -m loop_engine stage complete step1_base specify --notes "specs draft v1"
 
 # Real agent backends (when installed + authenticated)
 ./loop.sh -m plan --backend copilot -n 3
-./loop.sh -m build --backend cursor
+./loop.sh -m build --backend copilot
 
 # Inspect memory
 python -m loop_engine memory --recent 5

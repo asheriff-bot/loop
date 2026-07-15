@@ -6,7 +6,7 @@
 #
 # Manual agent chats should also be pasted below under a dated heading.
 
-## Bootstrap (human → Cursor)
+## Bootstrap (human → AI assistant)
 
 Analyze loop.pdf and build loop engineering code from scratch inspired by
 https://github.com/baidu-baige/LoongFlow (Plan-Execute-Summary), meeting the
@@ -215,7 +215,7 @@ When **all** plan items for the current step are implemented and validated, outp
 `<promise>DONE</promise>`
 
 ========================================================================
-# Human → Cursor Agent (2026-07-14) — product build request
+# Human → AI assistant (2026-07-14) — product build request
 Use the AI + loop code correctly to build a small gaming application with
 proper backend, functional generated code, runnable on localhost on a port
 so the game can be played correctly.
@@ -312,7 +312,7 @@ Build Locksmith: a Mastermind-style code-breaking browser game with a Flask + SQ
 Summarize remaining work and confidence. Output `<promise>DONE</promise>` only if the plan is complete and implementation-ready (no further planning iterations needed).
 
 ========================================================================
-# AI (Cursor) response to PLAN prompt — step1_base/plan
+# AI assistant response to PLAN prompt — step1_base/plan
 Produced prioritized IMPLEMENTATION_PLAN.md backlog for Locksmith base:
 engine, db, Flask API, static UI, tests, server script. No product code yet.
 <promise>DONE</promise>
@@ -424,7 +424,7 @@ When **all** plan items for the current step are implemented and validated, outp
 `<promise>DONE</promise>`
 
 ========================================================================
-# AI (Cursor) BUILD execution — step1_base/build
+# AI assistant BUILD execution — step1_base/build
 Implemented Locksmith base per IMPLEMENTATION_PLAN:
 - game/logic.py, db.py, app.py, templates, static
 - tests (logic + API), script/server

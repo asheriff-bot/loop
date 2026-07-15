@@ -64,7 +64,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_p.add_argument(
         "--backend",
         default=None,
-        choices=["dry_run", "echo", "copilot", "cursor"],
+        choices=["dry_run", "echo", "copilot"],
         help="Override agent.backend from config",
     )
     run_p.add_argument(

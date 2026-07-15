@@ -32,7 +32,7 @@ Usage: ./loop.sh [options]
 Options:
   -m, --mode <plan|build|execute|specify|review|summary>
   -n, --max <number>          Max iterations (0 = unlimited)
-  -b, --backend <name>        dry_run | echo | copilot | cursor
+  -b, --backend <name>        dry_run | echo | copilot
   -s, --stage <name>          Assignment stage label (defaults to mode)
   -c, --config <file>         Path to config.yaml
   -h, --help                  Show help

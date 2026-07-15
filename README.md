@@ -76,7 +76,6 @@ See `specs/00-assignment-rubric.md` and `running.md`. Short version:
 | `dry_run` | Testing the loop itself (default) |
 | `echo` | Write prompt to `.loop_workspace/next_prompt.md` for manual paste |
 | `copilot` | GitHub Copilot CLI (class tutorial) |
-| `cursor` | Cursor Agent CLI if available |
 
 ```bash
 ./loop.sh -m plan --backend echo -n 1

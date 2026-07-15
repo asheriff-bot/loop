@@ -37,7 +37,6 @@ evolve:
 # How we invoke the coding agent each iteration.
 # - dry_run: print the rendered prompt (no LLM spend; good for smoke tests)
 # - copilot: GitHub Copilot CLI (what the class tutorial used)
-# - cursor:  Cursor Agent CLI if installed (`agent` / `cursor agent`)
 # - echo:    write the prompt to a file for manual paste into any AI chat
 agent:
   backend: dry_run

@@ -22,8 +22,7 @@ plan → build, then the extension pass) forced that sequence into commits and
 2. **Loop plumbing bugs while dogfooding.** `loop.sh` blew up on an empty
    `EXTRA` array under `set -u`. Separately, the script preferred system
    `python3` over the conda `loop` env, so `PyYAML` was “missing” even after
-   pip install. The Cursor agent backend also treated `-p` as “prompt follows,”
-   but in the current CLI `-p` means `--print` — prompts are positional.
+   pip install — the shell had to prefer the active env’s `python`.
 3. **Duplicate-digit Mastermind.** Naive exact/partial counting double-counts
    when the secret or guess repeats digits. That is a quiet correctness bug you
    only notice with targeted tests.
@@ -39,16 +38,15 @@ plan → build, then the extension pass) forced that sequence into commits and
    mistake for an app bug.
 7. **Honest limit on “loop code generation.”** Plan/build stages ran through
    `./loop.sh`, but mostly with `echo` / `dry_run`. The Flask code was written
-   by the AI in-session, not by a multi-iteration autonomous `copilot`/`cursor`
-   agent loop. The loop framed and logged the work; it did not fully generate
-   the backend unattended.
+   with AI assistance in-session, not by a multi-iteration autonomous
+   Copilot CLI agent loop. The loop framed and logged the work; it did not
+   fully generate the backend unattended.
 
 ## Corrections made
 
 - Wrote and reviewed concrete base/extension specs, then filled
   `IMPLEMENTATION_PLAN.md` from the plan-loop prompt before coding APIs.
-- Fixed `loop.sh` empty-array handling, preferred `python` from the active env,
-  and corrected the Cursor backend flags (`--print --force` + positional prompt).
+- Fixed `loop.sh` empty-array handling and preferred `python` from the active env.
 - Implemented exact-first, then multiset partial marking; locked it in with unit
   tests (including duplicate cases) and API tests for create/guess/scores.
 - Centralized mode parameters; taught the UI to rebuild pad/slots from
@@ -66,6 +64,6 @@ plan → build, then the extension pass) forced that sequence into commits and
 The valuable SE lesson was not “AI can emit Flask,” but that loop-shaped stages
 only help if the backend boundaries are enforced: validate on the server, keep
 config in one place, and add tests that fail when duplicates or mode metadata
-drift. Where the toolchain lied (wrong Python, wrong CLI flag, occupied port),
-the fix was ordinary engineering — read the error, change the script, re-run —
-then keep going with the next stage commit instead of abandoning the process.
+drift. Where the toolchain lied (wrong Python binary, occupied port), the fix
+was ordinary engineering — read the error, change the script, re-run — then keep
+going with the next stage commit instead of abandoning the process.
