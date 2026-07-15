@@ -3,7 +3,7 @@
 **Play the game:** `./script/server` → [http://127.0.0.1:5055/](http://127.0.0.1:5055/)
 
 Mastermind-style **Locksmith** (Flask + SQLite) built with from-scratch
-**Plan–Execute–Summary** loop engineering code for CMU DevOps `loop.pdf`,
+**Plan–Execute–Summary** loop engineering code for CMU DevOps coursework,
 inspired by [LoongFlow](https://github.com/baidu-baige/LoongFlow) and the
 classroom [Ralph Wiggum tutorial](https://github.com/gwincr11/ralph-wiggum-tutorial).
 
@@ -11,7 +11,7 @@ classroom [Ralph Wiggum tutorial](https://github.com/gwincr11/ralph-wiggum-tutor
 
 | Source | Idea we kept |
 |--------|----------------|
-| **loop.pdf** | AI + loop → nontrivial product; 2 steps × ≥3 stages; loop ≥1 stage; stage commits; `prompts.txt` / `running.md` / `reflection.md` |
+| **Assignment rubric** | AI + loop → nontrivial product; 2 steps × ≥3 stages; loop ≥1 stage; stage commits; `prompts.txt` / `running.md` / `reflection.md` |
 | **Ralph loop** | `./loop.sh -m plan\|build`, prompt files, stop on completion promise |
 | **LoongFlow PES** | Explicit Plan → Execute → Summary + experiential memory (simplified, coursework-sized) |
 
